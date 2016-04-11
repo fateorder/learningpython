@@ -1,0 +1,82 @@
+＃本文转载，原址如下：
+http://blog.sina.com.cn/s/blog_68f3bc280101cezm.html
+
+Mac OS X 10.9 Mavericks安装Xcode Command Line Tools
+升级Mavericks应该大部分rails开发都会遇到这样的错误
+
+
+Installing json (1.8.1)
+Gem::Installer::ExtensionBuildError: ERROR: Failed to build gem native extension.
+
+        /Users/user/.rvm/rubies/ruby-1.9.3-p374/bin/ruby extconf.rb
+creating Makefile
+
+make
+compiling generator.c
+make: /usr/bin/gcc-4.2: No such file or directory
+make: *** [generator.o] Error 1
+
+
+Gem files will remain installed in /Users/user/.rvm/gems/ruby-1.9.3-p374/gems/json-1.8.1 for inspection.
+
+Results logged to /Users/user/.rvm/gems/ruby-1.9.3-p374/gems/json-1.8.1/ext/json/ext/generator/gem_make.out
+
+An error occurred while installing json (1.8.1), and Bundler cannot continue.
+Make sure that `gem install json -v '1.8.1'` succeeds before bundling.
+
+
+就是安装json gem的时候需要编译一下，然后需要Xcode命令行工具
+
+那我们就来安装一下
+
+xcode 5 怎么装？找到了这个链接
+
+http://railsapps.github.io/xcode-command-line-tools.html
+
+安装了xcode5,然后基本步骤
+
+看看有没有装了xcode包
+
+
+$ xcode-select -p
+看到下面这行是安装了xcode包
+
+
+/Applications/Xcode.app/Contents/Developer
+如果是下面这样，就是装好了tool
+
+
+/Library/Developer/CommandLineTools
+如果没有安装好tool
+
+下面的命令安装
+
+
+xcode-select --install
+我也是用这个命令装了，第一次图形界面跑完，然后说安装成功，但错误还是依旧
+
+xcode-select -p 还是看到了/Application/Xcode...这个路径
+重新跑了xcode-select --install，然后开始每次的结果都是
+cant' install the software because it is not currently available from the Software Update server
+
+最后自己来搞了
+
+查看/Library/Developer/CommandLineTools已经有了，所以把它设好
+
+
+sudo xcode-select -s /Library/Developer/CommandLineTools
+xcode-select -p，好了，正确了
+
+gcc --version
+Configured with: --prefix=/Library/Developer/CommandLineTools/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
+Apple LLVM version 5.0 (clang-500.2.79) (based on LLVM 3.3svn)
+Target: x86_64-apple-darwin13.0.0
+Thread model: posix
+这个也正确了
+然后装json gem，还是有错
+make: /usr/bin/gcc-4.2: No such file or directory
+没有gcc-4.2
+那就
+
+ln -s /usr/bin/gcc /usr/bin/gcc-4.2
+好，解决
